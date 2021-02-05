@@ -4,7 +4,7 @@ GET http://localhost:3001/info
 GET http://localhost:3001/api/persons/
 
 ###
-GET http://localhost:3001/api/persons/1
+GET http://localhost:3001/api/persons/601a0e9e08184d58c3be0256
 
 ### 
 GET http://localhost:3001/api/persons/99
@@ -14,7 +14,7 @@ POST http://localhost:3001/api/persons/
 Content-Type: application/json
 
 {
-  "name": "Lily",
+  "name": "Colbert",
   "number": "4102019"
 }
 
@@ -27,5 +27,15 @@ Content-Type: application/json
   "number": "4102019"
 }
 
+
+### PUT Bob
+PUT http://localhost:3001/api/persons/601ce6924796c20a4c12c4a3
+Content-Type: application/json
+
+{
+  "name": "Bob",
+  "number": "00000"
+}
+
 ###
-DELETE http://localhost:3001/api/persons/3
+DELETE http://localhost:3001/api/persons/601cda2f719f4c05dc31c70c
