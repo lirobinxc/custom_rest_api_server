@@ -28,8 +28,14 @@ app.use(morgan(function(tokens, req, res) {
     JSON.stringify(req.body)
   ].join(' ')
 }))
+app.use((req, res, next) => {
+  console.log(`📣 START ~`)
+  next()
+  console.log(`📣 STOP ~`)
+})
 
 app.get ('/', (req, res) => {
+  console.log(`📣 Welcome! ~`)
   res.send('<h1>Welcome home.</h1>')
 })
 
@@ -41,13 +47,18 @@ app.get('/api/persons', (req, res) => {
     })
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   const id = String(req.params.id)
-  const person = persons.find(ele => ele.id === id)
-  if (!person) {
-    return res.status(404).end('Nothing here but us chickens.')
-  }
-  res.json(person)
+  // const person = persons.find(ele => ele.id === id)
+  // if (!person) {
+  //   return res.status(404).end('Nothing here but us chickens.')
+  // }
+  // res.json(person)
+
+  // Updated version with Error handling
+  Person.findById(id)
+    .then(person => res.json(person))
+    .catch(err => next(err))
 })
 
 app.get('/info', (req, res) => {
@@ -65,8 +76,10 @@ app.post('/api/persons', (req, res) => {
   })
   // Check for missing content or duplicate names
   const namesArr = persons.map(ele => ele.name.toLowerCase())
-  if (!body.name || !body.number) {
-    return res.status(422).json({ error: 'missing content'})
+  if (body.content === undefined) {
+    return res.status(400).json({ error: 'missing content' })
+  } else if (!body.name || !body.number) {
+    return res.status(422).json({ error: 'missing name and/or number'})
   } else if (namesArr.includes(body.name.toLowerCase())) {
     return res.status(422).json({error: 'name already exists'})
   }
@@ -93,9 +106,27 @@ app.delete('/api/persons/:id', (req, res) => {
 
 // catches all unknown requests
 const unknownEndpoint = (req, res) => {
-  return res.status(404).end('Nothing here, my dude...')
+  return res.status(404).end('404 - Unknown Endpoint :(')
 }
 app.use(unknownEndpoint)
+
+// error handling
+const errorHandler = (err, req, res, next) => {
+  console.log(`📣 ERROR ~`, err.message)
+  
+  if (err.name === 'CastError') {
+    return res.status(400).send({error: 'ID does not exist'})
+  }
+  next(err) // calls next(err) if uncaught by above if statement
+}
+app.use(errorHandler)
+
+// catches all uncaught errors
+function errorHandlerFinal (err, req, res, next) {
+  res.status(500)
+  res.json({ error: 'bad request'})
+}
+app.use(errorHandlerFinal)
 
 
 const PORT = process.env.EXPRESS_PORT

@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "git": "git add . && git commit -m",
-    "postgit": "git push"
+    "postgit": "git push",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -27,5 +28,8 @@
     "express": "^4.17.1",
     "mongoose": "^5.11.13",
     "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.19.0"
   }
 }
